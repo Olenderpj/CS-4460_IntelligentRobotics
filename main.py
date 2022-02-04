@@ -1,3 +1,6 @@
+import math
+import signal
+
 from Robot import *
 from controls import *
 from Utils import *
@@ -18,14 +21,15 @@ if clientID != -1:
 else:
     logging.warning("[Connection]: Connection was unsuccessful")
 
-
 pioneer = Robot(sim)
-pioneer.setLeftMotorVelocity(.5)
+pioneer.pivotLeft90Degrees()
 
-for i in range(10):
-    print(pioneer.readUltrasonicSensor(4))
-
-
-sleep(3)
+sleep(5)
 sim.stopSimulation()
 connectionMessage("Connection has successfully ended")
+
+# Degrees -> Radians
+#   print(math.radians(45))
+
+# Radians -> Degrees
+# print(math.degrees(6.706922431476414e-05))
