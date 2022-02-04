@@ -1,0 +1,13 @@
+from time import sleep
+from zmqRemoteApi import RemoteAPIClient
+client = RemoteAPIClient('localhost',23000)
+sim = client.getobject('sim')
+sensor1Handle=sim.getObject('/VisionSensor')
+sensor2Handle=sim.getObject('/PassiveVisionSensor')
+
+sim.startSimulation()
+while True:
+    image,resX,resY=sim.getVisionSensorCharImage(sensor1Handle)
+    sim.setVisionSensorCharImage(sensor2Handle,image)
+    sleep(0.01)
+sim.stopSimulation()
