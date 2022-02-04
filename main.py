@@ -1,5 +1,6 @@
 from Robot import *
 from controls import *
+from Utils import *
 from zmqRemoteApi import RemoteAPIClient
 
 client = RemoteAPIClient()
@@ -21,9 +22,10 @@ else:
 pioneer = Robot(sim)
 pioneer.setLeftMotorVelocity(.5)
 
-for i in range(1000):
-    print(i, pioneer.readProximitySensor(4))
+for i in range(10):
+    print(pioneer.readUltrasonicSensor(4))
 
 
 sleep(3)
 sim.stopSimulation()
+connectionMessage("Connection has successfully ended")

@@ -1,5 +1,7 @@
 from Pioneer_Paths import *
 
+''' This class is mostly set up for a pioneer robot, but could be configured for others as well'''
+
 
 class Robot:
 
@@ -20,12 +22,12 @@ class Robot:
         self.setLeftMotorVelocity(velocity)
         self.setRightMotorVelocity(velocity)
 
-    def readProximitySensor(self, sensorNumber):
+    def readUltrasonicSensor(self, sensorNumber):
         sensorNumber = self.__generateUltrasonicSensorPath(sensorNumber)
         sensorHandle = self.sim.getObject(sensorNumber)
-        return self.sim.readProximitySensor(sensorHandle)
+        sensorReading = self.sim.readProximitySensor(sensorHandle)
+        return sensorReading
 
     @staticmethod
-    def __generateUltrasonicSensorPath( sensorNumber):
+    def __generateUltrasonicSensorPath(sensorNumber):
         return f'/ultrasonicSensor[{sensorNumber}]'
-
