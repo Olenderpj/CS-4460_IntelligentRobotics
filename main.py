@@ -21,15 +21,19 @@ if clientID != -1:
 else:
     logging.warning("[Connection]: Connection was unsuccessful")
 
-pioneer = Robot(sim)
-pioneer.pivotLeft90Degrees()
 
-sleep(5)
+def square():
+    while True:
+        pioneer.setBothMotorsToSameVelocity(.5)
+        sleep(5)
+        pioneer.stop()
+        sleep(.5)
+        pioneer.pivot(90, 1)
+
+
+pioneer = Robot(sim)
+square()
+
+sleep(2)
 sim.stopSimulation()
 connectionMessage("Connection has successfully ended")
-
-# Degrees -> Radians
-#   print(math.radians(45))
-
-# Radians -> Degrees
-# print(math.degrees(6.706922431476414e-05))

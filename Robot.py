@@ -1,5 +1,4 @@
 import math
-
 from Pioneer_Paths import *
 from time import *
 from UltrasonicSensorReading import *
@@ -34,34 +33,66 @@ class Robot:
         sensorReading = UltraSonicSensorReading(self.sim.readProximitySensor(sensorHandle))
         return sensorReading
 
-    #Still a bug here - hmmmmmm
-    def pivotLeft90Degrees(self, velocity=.5, targetAngle=90):
-        self.setRightMotorVelocity(velocity)
+    # Pivots the robot 90 degrees
+    #def pivotLeft90Degrees(self, velocity=.4, targetAngle=90):
+    #    self.setLeftMotorVelocity(velocity)
+    #
+    #    currentEntityAngleDegrees = mapEntityOrientationFromRadiansToDegrees(self.getEntityAngle())
+    #
+    #    print("Current:", currentEntityAngleDegrees[2])
+    #    targetValues = [abs(math.ceil(currentEntityAngleDegrees[2] + targetAngle)),
+    #                    abs(math.ceil(currentEntityAngleDegrees[2] - targetAngle))]
+    #
+    #    print("Targets:", targetValues)
+    #
+    #    while True:
+    #        currentEntityAngleDegrees = mapEntityOrientationFromRadiansToDegrees(self.getEntityAngle())
+    #        print(math.ceil(currentEntityAngleDegrees[2] % 180), targetValues)
+    #        if math.ceil(currentEntityAngleDegrees[2]) % 180 in targetValues:
+    #            print("Reached Pos")
+    #            self.setBothMotorsToSameVelocity(0)
+    #            break
+
+    # pivot the motor, note that with higher velocities, accuracy may decrease
+    def pivot(self, targetAngle, motor, velocity=.5, ):
+        if velocity > 1:
+            velocity = 1
+
+        # Left pivot
+        if motor == 1:
+            self.setRightMotorVelocity(velocity)
+
+        # Right Pivot
+        elif motor == 2:
+            self.setLeftMotorVelocity(velocity)
+
+        # Right-Dual wheel pivot
+        elif motor == 3:
+            self.setLeftMotorVelocity(velocity)
+            self.setRightMotorVelocity(-1 * velocity)
+
+        # Left-Dual wheel pivot
+        elif motor == 4:
+            self.setLeftMotorVelocity(-1 * velocity)
+            self.setRightMotorVelocity(velocity)
+
+        # self.setLeftMotorVelocity(velocity)
 
         currentEntityAngleDegrees = mapEntityOrientationFromRadiansToDegrees(self.getEntityAngle())
+        self.logMessageToSim(f"Current:{currentEntityAngleDegrees[2]}")
+        targetValues = [abs(math.ceil(currentEntityAngleDegrees[2] + targetAngle)) % 180,
+                        abs(math.ceil(currentEntityAngleDegrees[2] - targetAngle)) % 180]
+
+        print("Targets:", targetValues)
+
         while True:
-            if currentEntityAngleDegrees[2] <= targetAngle:
-                print("false", currentEntityAngleDegrees[2])
-            else:
-                print("True", currentEntityAngleDegrees[2])
-                self.logMessageToSim(f"The Entity {self.entityHandle} has pivoted left by 90 degrees")
+            currentEntityAngleDegrees = mapEntityOrientationFromRadiansToDegrees(self.getEntityAngle())
+            print(math.ceil(currentEntityAngleDegrees[2] % 180), targetValues)
+            self.logMessageToSim(f" Current Angle{(math.ceil(currentEntityAngleDegrees[2] % 180))}, Targets: {targetValues}")
+            if math.ceil(currentEntityAngleDegrees[2]) % 180 in targetValues:
+                self.logMessageToSim(f"Entity {self.entityHandle} has arrived at it's desired position")
                 self.setBothMotorsToSameVelocity(0)
                 break
-            currentEntityAngleDegrees = mapEntityOrientationFromRadiansToDegrees(self.getEntityAngle())
-
-    def pivotRight90Degrees(self, velocity=.5, targetAngle=90):
-        self.setLeftMotorVelocity(velocity)
-
-        currentEntityAngleDegrees = mapEntityOrientationFromRadiansToDegrees(self.getEntityAngle())
-        while True:
-            if currentEntityAngleDegrees[2] <= targetAngle:
-                print("false", currentEntityAngleDegrees[2])
-            else:
-                print("True", currentEntityAngleDegrees[2])
-                self.logMessageToSim(f"The Entity {self.entityHandle} has pivoted right by 90 degrees")
-                self.setBothMotorsToSameVelocity(0)
-                break
-            currentEntityAngleDegrees = mapEntityOrientationFromRadiansToDegrees(self.getEntityAngle())
 
     # roll = x, pitch = y, yaw = z
     def setEntityAngle(self, roll, pitch, yaw):
@@ -104,6 +135,11 @@ class Robot:
 
         distance = self.sim.checkDistance(self.entityHandle, leftSensorReading.detectedObjectHandle, 0)
         print("Dist", distance)
+
+    def stop(self):
+        self.setBothMotorsToSameVelocity(0)
+        self.logMessageToSim("Command sent to Stop")
+
 
     def logErrorToSim(self, message):
         self.sim.addLog(self.sim.verbosity_errors, message)
