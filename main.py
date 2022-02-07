@@ -21,7 +21,7 @@ if clientID != -1:
 else:
     logging.warning("[Connection]: Connection was unsuccessful")
 
-
+# Robot follows a square path
 def square():
     while True:
         pioneer.setBothMotorsToSameVelocity(.5)
